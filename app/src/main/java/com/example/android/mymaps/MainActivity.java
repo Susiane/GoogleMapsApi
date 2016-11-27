@@ -7,11 +7,21 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends AppCompatActivity {
     GoogleMap mMap;
+    private static final double
+            SEATTLE_LAT = 47.60621,
+            SEATTLE_LNG =-122.33207,
+            SYDNEY_LAT = -33.867487,
+            SYDNEY_LNG = 151.20699,
+            NEWYORK_LAT = 40.714353,
+            NEWYORK_LNG = -74.005973;
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
     @Override
@@ -23,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(initMap()){
                 Toast.makeText(this, "Ready to map!",Toast.LENGTH_SHORT).show();
+                gotoLocation(SEATTLE_LAT,SEATTLE_LNG, 15);
             } else{
                 Toast.makeText(this, "Map not connected!",Toast.LENGTH_SHORT).show();
             }
@@ -46,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+
     private boolean initMap(){
         if (mMap == null){
             SupportMapFragment mapFragment =
@@ -53,5 +65,11 @@ public class MainActivity extends AppCompatActivity {
             mMap = mapFragment.getMap();
         }
         return(mMap != null);
+    }
+
+    private void gotoLocation(double lat, double lng, float zoom){
+        LatLng latLng = new LatLng(lat, lng);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+        mMap.moveCamera(update);
     }
 }
