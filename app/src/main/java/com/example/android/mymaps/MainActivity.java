@@ -1,8 +1,13 @@
 package com.example.android.mymaps;
 
 import android.app.Dialog;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -12,6 +17,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     GoogleMap mMap;
@@ -71,5 +79,33 @@ public class MainActivity extends AppCompatActivity {
         LatLng latLng = new LatLng(lat, lng);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
         mMap.moveCamera(update);
+    }
+
+    public void geoLocate(View v) throws IOException {
+
+        hideSoftKeyboard(v);
+
+        TextView tv = (TextView) findViewById(R.id.editText1);
+        String searchString = tv.getText().toString();
+
+        Geocoder gc = new Geocoder(this);
+        List<Address> list = gc.getFromLocationName(searchString, 1); //segundo argumento é maximo de resultados que eu quero receber
+
+        if (list.size() > 0) {
+            Address add = list.get(0);
+            String locality = add.getLocality();
+            Toast.makeText(this, "Found: " + locality, Toast.LENGTH_SHORT).show();
+
+            double lat = add.getLatitude();
+            double lng = add.getLongitude();
+            gotoLocation(lat, lng, 15);
+        }
+
+    }
+
+    private void hideSoftKeyboard(View v) {
+        InputMethodManager imm =
+                (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }
